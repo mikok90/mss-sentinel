@@ -15,11 +15,11 @@ function formatDate(ts: string) {
 }
 
 const ZONE_REFS = [
-  { value: 95, label: 'EXT.PANIC', color: '#00ff41' },
-  { value: 85, label: 'T.PANIC', color: '#22c55e' },
-  { value: 65, label: 'H.FEAR', color: '#86efac' },
+  { value: 95, label: 'T.PANIC', color: '#ef4444' },
+  { value: 85, label: 'H.FEAR', color: '#f97316' },
+  { value: 65, label: 'FEAR', color: '#fbbf24' },
   { value: 40, label: 'NEUTRAL', color: '#6b7280' },
-  { value: 20, label: 'H.GREED', color: '#f97316' },
+  { value: 20, label: 'GREED', color: '#86efac' },
 ];
 
 function getMssColor(mss: number): string {
@@ -136,12 +136,12 @@ export default function MssHistory({ data }: Props) {
       {/* Zone legend */}
       <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginTop: 10 }}>
         {[
-          { label: 'EXTREME PANIC', color: '#00ff41' },
-          { label: 'TOTAL PANIC', color: '#22c55e' },
-          { label: 'HIGH FEAR', color: '#86efac' },
+          { label: 'TOTAL PANIC', color: '#ef4444' },
+          { label: 'HIGH FEAR', color: '#f97316' },
+          { label: 'FEAR', color: '#fbbf24' },
           { label: 'NEUTRAL', color: '#6b7280' },
-          { label: 'HIGH GREED', color: '#f97316' },
-          { label: 'EUPHORIA', color: '#ef4444' },
+          { label: 'GREED', color: '#86efac' },
+          { label: 'HIGH GREED', color: '#00ff41' },
         ].map((z) => (
           <div key={z.label} style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
             <div style={{ width: 8, height: 8, borderRadius: 2, background: z.color }} />

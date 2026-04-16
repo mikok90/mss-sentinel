@@ -74,31 +74,31 @@ export function getZoneInfo(mss: number): ZoneInfo {
   if (mss >= ZONE_EXTREME_PANIC) {
     return {
       zone: 'EXTREME_PANIC',
-      zoneLabel: 'EXTREME PANIC',
+      zoneLabel: 'TOTAL PANIC',
       action: 'DEPLOY',
       actionPercent: ACTION_EXTREME_PANIC_BUY_PCT,
       actionDetail: `Deploy ${ACTION_EXTREME_PANIC_BUY_PCT}% of your available cash`,
-      color: '#00ff41',
+      color: '#ef4444',
     };
   }
   if (mss >= ZONE_TOTAL_PANIC) {
     return {
       zone: 'TOTAL_PANIC',
-      zoneLabel: 'TOTAL PANIC',
+      zoneLabel: 'HIGH FEAR',
       action: 'DEPLOY',
       actionPercent: ACTION_TOTAL_PANIC_BUY_PCT,
       actionDetail: `Deploy ${ACTION_TOTAL_PANIC_BUY_PCT}% of your available cash`,
-      color: '#22c55e',
+      color: '#f97316',
     };
   }
   if (mss >= ZONE_HIGH_FEAR) {
     return {
       zone: 'HIGH_FEAR',
-      zoneLabel: 'HIGH FEAR',
+      zoneLabel: 'FEAR',
       action: 'DEPLOY',
       actionPercent: ACTION_HIGH_FEAR_BUY_PCT,
       actionDetail: `Deploy ${ACTION_HIGH_FEAR_BUY_PCT}% of your available cash`,
-      color: '#86efac',
+      color: '#fbbf24',
     };
   }
   if (mss >= ZONE_NEUTRAL) {
@@ -114,20 +114,20 @@ export function getZoneInfo(mss: number): ZoneInfo {
   if (mss >= ZONE_HIGH_GREED) {
     return {
       zone: 'HIGH_GREED',
-      zoneLabel: 'HIGH GREED',
+      zoneLabel: 'GREED',
       action: 'TRIM',
       actionPercent: ACTION_HIGH_GREED_TRIM_PCT,
       actionDetail: `Trim ${ACTION_HIGH_GREED_TRIM_PCT}% of your invested portfolio`,
-      color: '#f97316',
+      color: '#86efac',
     };
   }
   return {
     zone: 'EUPHORIA',
-    zoneLabel: 'EUPHORIA',
+    zoneLabel: 'HIGH GREED',
     action: 'TRIM',
     actionPercent: ACTION_EUPHORIA_TRIM_PCT,
     actionDetail: `Trim ${ACTION_EUPHORIA_TRIM_PCT}% of your invested portfolio`,
-    color: '#ef4444',
+    color: '#00ff41',
   };
 }
 

@@ -244,12 +244,12 @@ export default function Dashboard() {
                 </thead>
                 <tbody>
                   {[
-                    { range: '95–100', zone: 'EXTREME PANIC', action: 'Deploy 80% of cash', color: '#00ff41' },
-                    { range: '85–94', zone: 'TOTAL PANIC', action: 'Deploy 50% of cash', color: '#22c55e' },
-                    { range: '65–84', zone: 'HIGH FEAR', action: 'Deploy 25% of cash', color: '#86efac' },
+                    { range: '95–100', zone: 'TOTAL PANIC', action: 'Deploy 80% of cash', color: '#ef4444' },
+                    { range: '85–94', zone: 'HIGH FEAR', action: 'Deploy 50% of cash', color: '#f97316' },
+                    { range: '65–84', zone: 'FEAR', action: 'Deploy 25% of cash', color: '#fbbf24' },
                     { range: '40–64', zone: 'NEUTRAL', action: 'HOLD — do nothing', color: '#6b7280' },
-                    { range: '20–39', zone: 'HIGH GREED', action: 'Trim 15% of portfolio', color: '#f97316' },
-                    { range: '0–19', zone: 'EUPHORIA', action: 'Trim 25% of portfolio', color: '#ef4444' },
+                    { range: '20–39', zone: 'GREED', action: 'Trim 15% of portfolio', color: '#86efac' },
+                    { range: '0–19', zone: 'HIGH GREED', action: 'Trim 25% of portfolio', color: '#00ff41' },
                   ].map((row) => {
                     const isActive = current?.zoneLabel?.toUpperCase() === row.zone.toUpperCase();
                     return (
