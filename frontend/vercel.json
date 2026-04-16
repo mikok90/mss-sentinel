@@ -1,8 +1,6 @@
 {
+  "name": "mss-sentinel-app",
   "framework": "nextjs",
   "buildCommand": "npm run build",
-  "devCommand": "npm run dev",
-  "env": {
-    "NEXT_PUBLIC_API_URL": "@mss_backend_url"
-  }
+  "devCommand": "npm run dev"
 }
