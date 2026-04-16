@@ -1,0 +1,65 @@
+services:
+  - type: web
+    name: mss-sentinel-backend
+    runtime: node
+    rootDir: backend
+    buildCommand: npm install && npm run build
+    startCommand: node dist/src/main.js
+    healthCheckPath: /api/mss/health
+    plan: free
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: mss-sentinel-db
+          property: connectionString
+      - key: FRED_API_KEY
+        value: e6599d1d8f98466c1bd73847c65172ca
+      - key: TELEGRAM_BOT_TOKEN
+        value: 8357989706:AAFQgJ3gbxhc7qjJxI9WibxlJ4SuymVcJzM
+      - key: TELEGRAM_CHAT_ID
+        value: "8735897030"
+      - key: TELEGRAM_ENABLED
+        value: "true"
+      - key: VIX_WEIGHT
+        value: "0.70"
+      - key: FNG_WEIGHT
+        value: "0.30"
+      - key: VIX_FLOOR
+        value: "12"
+      - key: VIX_CEILING
+        value: "40"
+      - key: ZONE_EXTREME_PANIC
+        value: "95"
+      - key: ZONE_TOTAL_PANIC
+        value: "85"
+      - key: ZONE_HIGH_FEAR
+        value: "65"
+      - key: ZONE_NEUTRAL
+        value: "40"
+      - key: ZONE_HIGH_GREED
+        value: "20"
+      - key: ACTION_EXTREME_PANIC_BUY_PCT
+        value: "80"
+      - key: ACTION_TOTAL_PANIC_BUY_PCT
+        value: "50"
+      - key: ACTION_HIGH_FEAR_BUY_PCT
+        value: "25"
+      - key: ACTION_HIGH_GREED_TRIM_PCT
+        value: "15"
+      - key: ACTION_EUPHORIA_TRIM_PCT
+        value: "25"
+      - key: STABILITY_READINGS
+        value: "2"
+      - key: CRON_INTERVAL_MINUTES
+        value: "30"
+      - key: MAX_DATA_AGE_HOURS
+        value: "24"
+      - key: PORT
+        value: "3001"
+
+databases:
+  - name: mss-sentinel-db
+    databaseName: mss_db
+    plan: free

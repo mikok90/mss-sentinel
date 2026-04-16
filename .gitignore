@@ -1,0 +1,25 @@
+node_modules/
+dist/
+.next/
+*.sqlite
+*.sqlite-journal
+
+# env files — ΠΟΤΕ στο git (έχουν API keys)
+.env
+.env.local
+frontend/.env.local
+backend/.env
+
+# build artifacts
+*.tsbuildinfo
+**/*.d.ts
+**/*.js.map
+backend/test/*.js
+
+# logs
+*.log
+/tmp/
+
+# OS
+.DS_Store
+Thumbs.db

@@ -1,0 +1,41 @@
+services:
+  - type: web
+    name: mss-backend
+    runtime: node
+    buildCommand: npm install && npm run build
+    startCommand: npm run start:prod
+    healthCheckPath: /api/mss/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: mss-db
+          property: connectionString
+      - key: FRED_API_KEY
+        sync: false
+      - key: TELEGRAM_BOT_TOKEN
+        sync: false
+      - key: TELEGRAM_CHAT_ID
+        sync: false
+      - key: TELEGRAM_ENABLED
+        value: "true"
+      - key: VIX_WEIGHT
+        value: "0.70"
+      - key: FNG_WEIGHT
+        value: "0.30"
+      - key: VIX_FLOOR
+        value: "12"
+      - key: VIX_CEILING
+        value: "40"
+      - key: CRON_INTERVAL_MINUTES
+        value: "30"
+      - key: STABILITY_READINGS
+        value: "2"
+      - key: MAX_DATA_AGE_HOURS
+        value: "24"
+
+databases:
+  - name: mss-db
+    databaseName: mss_db
+    plan: free
