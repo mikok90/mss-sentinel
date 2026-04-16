@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: mss-sentinel-backend
+    name: mss-backend-api
     runtime: node
     rootDir: backend
     buildCommand: npm install && npm run build
@@ -12,7 +12,7 @@ services:
         value: production
       - key: DATABASE_URL
         fromDatabase:
-          name: mss-sentinel-db
+          name: mss-db-free
           property: connectionString
       - key: FRED_API_KEY
         value: e6599d1d8f98466c1bd73847c65172ca
@@ -60,6 +60,6 @@ services:
         value: "3001"
 
 databases:
-  - name: mss-sentinel-db
+  - name: mss-db-free
     databaseName: mss_db
     plan: free
