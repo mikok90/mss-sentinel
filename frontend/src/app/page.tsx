@@ -95,13 +95,13 @@ export default function Dashboard() {
           <button
             onClick={refresh}
             style={{
-              background: 'none', border: '1px solid var(--border)',
-              color: 'var(--text-secondary)', fontSize: 10, padding: '3px 10px',
+              background: 'none', border: '1px solid var(--accent-cyan)',
+              color: 'var(--accent-cyan)', fontSize: 9, padding: '2px 7px',
               borderRadius: 3, cursor: 'pointer', fontFamily: 'var(--font)',
-              letterSpacing: '0.08em',
+              letterSpacing: '0.08em', opacity: 0.7,
             }}
           >
-            ↻ REFRESH
+            ↻
           </button>
         </div>
       </header>

@@ -53,8 +53,8 @@ export async function GET() {
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 </head>
 <body style="margin:0;padding:12px;background:#0a0a0f;font-family:monospace;">
-  <div style="background:#0f0f1a;border:2px solid ${color};border-radius:10px;padding:18px 20px;text-align:center;box-shadow:0 0 20px ${color}44;">
-    <div style="color:${color};font-size:64px;font-weight:bold;line-height:1;">${mss}</div>
+  <div style="background:#0f0f1a;border:2px solid #1e3a6e;border-radius:10px;padding:18px 20px;text-align:center;box-shadow:0 0 18px #1e3a6e88;">
+    <div style="color:${color};font-size:42px;font-weight:bold;line-height:1;">${mss}</div>
     <div style="color:#555;font-size:10px;letter-spacing:2px;margin-top:2px;">MSS SCORE</div>
     <div style="color:${color};font-size:14px;font-weight:bold;margin-top:12px;letter-spacing:1px;">${zone}</div>
     <div style="color:#888;font-size:11px;margin-top:8px;line-height:1.5;">${action}</div>
