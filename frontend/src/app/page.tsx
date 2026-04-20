@@ -76,11 +76,11 @@ export default function Dashboard() {
           }}>
             ■ MSS SENTINEL
           </span>
-          <span style={{ color: 'var(--text-dim)', fontSize: 10 }}>
+          <span className="header-subtitle" style={{ color: 'var(--text-dim)', fontSize: 10 }}>
             MULTI-FACTOR SENTIMENT SCORE
           </span>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+        <div className="header-meta">
           {current && !current.status && (
             <span style={{ fontSize: 10, color: 'var(--text-dim)' }}>
               {current.stale
@@ -148,14 +148,7 @@ export default function Dashboard() {
 
       {/* ── Main Content ───────────────────────────────────────────────── */}
       {current && !current.status && !loading && (
-        <div style={{
-          maxWidth: 1100,
-          margin: '0 auto',
-          padding: '20px 24px',
-          display: 'grid',
-          gridTemplateColumns: '280px 1fr',
-          gap: 20,
-        }}>
+        <div className="main-grid">
           {/* LEFT: Gauge + meta */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             {/* Gauge */}
