@@ -13,22 +13,22 @@ export class VixService {
   private readonly fredApiKey = process.env.FRED_API_KEY;
 
   async fetchVix(): Promise<VixResult> {
-    // Primary: FRED API
-    try {
-      const result = await this.fetchFromFred();
-      this.logger.log(`VIX from FRED: ${result.value} (${result.date})`);
-      return result;
-    } catch (err) {
-      this.logger.warn(`FRED failed: ${err.message} — trying Yahoo Finance`);
-    }
-
-    // Fallback: Yahoo Finance via yfinance-compatible endpoint
+    // Primary: Yahoo Finance (real-time, 15-min delay) — reflects intraday moves
     try {
       const result = await this.fetchFromYahoo();
       this.logger.log(`VIX from Yahoo: ${result.value}`);
       return result;
     } catch (err) {
-      this.logger.error(`Yahoo Finance failed: ${err.message}`);
+      this.logger.warn(`Yahoo Finance failed: ${err.message} — trying FRED`);
+    }
+
+    // Fallback: FRED API (end-of-day only — previous close)
+    try {
+      const result = await this.fetchFromFred();
+      this.logger.log(`VIX from FRED: ${result.value} (${result.date})`);
+      return result;
+    } catch (err) {
+      this.logger.error(`FRED failed: ${err.message}`);
       throw new Error('All VIX data sources failed');
     }
   }
