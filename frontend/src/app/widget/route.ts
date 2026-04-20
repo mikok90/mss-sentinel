@@ -51,59 +51,30 @@ export async function GET() {
   <meta charset="UTF-8" />
   <meta http-equiv="refresh" content="300" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&display=swap');
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body {
-      font-family: 'JetBrains Mono', 'Courier New', monospace;
-      background: #0a0a0f;
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 12px;
-    }
-    .card {
-      background: #0f0f1a;
-      border: 2px solid ${color};
-      border-radius: 12px;
-      padding: 20px 24px;
-      text-align: center;
-      width: 100%;
-      max-width: 280px;
-      box-shadow: 0 0 28px ${color}55;
-    }
-    .mss { color: ${color}; font-size: 72px; font-weight: 700; line-height: 1; }
-    .mss-label { color: #475569; font-size: 9px; letter-spacing: 0.15em; margin-top: 2px; }
-    .zone { color: ${color}; font-size: 15px; font-weight: 600; margin-top: 14px; letter-spacing: 0.06em; }
-    .action { color: #94a3b8; font-size: 11px; margin-top: 8px; line-height: 1.5; }
-    .divider { border-top: 1px solid #1e1e35; margin: 14px 0; }
-    .stats { display: flex; justify-content: space-around; }
-    .stat-label { color: #475569; font-size: 9px; letter-spacing: 0.1em; }
-    .stat-value { color: #e2e8f0; font-size: 13px; font-weight: 600; margin-top: 3px; }
-  </style>
 </head>
-<body>
-  <div class="card">
-    <div class="mss">${mss}</div>
-    <div class="mss-label">MSS SCORE</div>
-    <div class="zone">${zone}</div>
-    <div class="action">${action}</div>
-    <div class="divider"></div>
-    <div class="stats">
-      <div>
-        <div class="stat-label">VIX</div>
-        <div class="stat-value">${vix}</div>
-      </div>
-      <div>
-        <div class="stat-label">F&amp;G</div>
-        <div class="stat-value">${fng}</div>
-      </div>
-      <div>
-        <div class="stat-label">AGE</div>
-        <div class="stat-value" style="color:${ageColor}">${age}</div>
-      </div>
-    </div>
+<body style="margin:0;padding:12px;background:#0a0a0f;font-family:monospace;">
+  <div style="background:#0f0f1a;border:2px solid ${color};border-radius:10px;padding:18px 20px;text-align:center;box-shadow:0 0 20px ${color}44;">
+    <div style="color:${color};font-size:64px;font-weight:bold;line-height:1;">${mss}</div>
+    <div style="color:#555;font-size:10px;letter-spacing:2px;margin-top:2px;">MSS SCORE</div>
+    <div style="color:${color};font-size:14px;font-weight:bold;margin-top:12px;letter-spacing:1px;">${zone}</div>
+    <div style="color:#888;font-size:11px;margin-top:8px;line-height:1.5;">${action}</div>
+    <hr style="border:none;border-top:1px solid #222;margin:12px 0;" />
+    <table style="width:100%;border-collapse:collapse;">
+      <tr>
+        <td style="text-align:center;padding:2px;">
+          <div style="color:#555;font-size:9px;letter-spacing:1px;">VIX</div>
+          <div style="color:#ddd;font-size:13px;font-weight:bold;">${vix}</div>
+        </td>
+        <td style="text-align:center;padding:2px;">
+          <div style="color:#555;font-size:9px;letter-spacing:1px;">F&amp;G</div>
+          <div style="color:#ddd;font-size:13px;font-weight:bold;">${fng}</div>
+        </td>
+        <td style="text-align:center;padding:2px;">
+          <div style="color:#555;font-size:9px;letter-spacing:1px;">AGE</div>
+          <div style="color:${ageColor};font-size:13px;font-weight:bold;">${age}</div>
+        </td>
+      </tr>
+    </table>
   </div>
 </body>
 </html>`;
