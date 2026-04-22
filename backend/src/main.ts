@@ -1,5 +1,6 @@
 import 'reflect-metadata';
 import { NestFactory } from '@nestjs/core';
+import { RequestMethod } from '@nestjs/common';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
@@ -10,7 +11,9 @@ async function bootstrap() {
     methods: ['GET'],
   });
 
-  app.setGlobalPrefix('api');
+  app.setGlobalPrefix('api', {
+    exclude: [{ path: 'widget', method: RequestMethod.GET }],
+  });
 
   const port = process.env.PORT || 3001;
   await app.listen(port);

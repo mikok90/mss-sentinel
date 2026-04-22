@@ -4,7 +4,6 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { MssModule } from './mss/mss.module';
 import { MssReading } from './mss/mss.entity';
-
 @Module({
   imports: [
     ScheduleModule.forRoot(),
