@@ -54,26 +54,19 @@ export default function MssGauge({ mss, zone, size = 220 }: Props) {
       {/* Gradient defs */}
       <defs>
         <linearGradient id="gauge-fill" x1="0%" y1="0%" x2="100%" y2="0%">
-          <stop offset="0%" stopColor="#ef4444" />
-          <stop offset="40%" stopColor="#f97316" />
-          <stop offset="60%" stopColor="#6b7280" />
-          <stop offset="80%" stopColor="#22c55e" />
-          <stop offset="100%" stopColor="#00ff41" />
+          <stop offset="0%" stopColor="#f87171" />
+          <stop offset="40%" stopColor="#fb923c" />
+          <stop offset="60%" stopColor="#94a3b8" />
+          <stop offset="80%" stopColor="#86efac" />
+          <stop offset="100%" stopColor="#4ade80" />
         </linearGradient>
-        <filter id="glow-filter">
-          <feGaussianBlur stdDeviation="3" result="coloredBlur" />
-          <feMerge>
-            <feMergeNode in="coloredBlur" />
-            <feMergeNode in="SourceGraphic" />
-          </feMerge>
-        </filter>
       </defs>
 
       {/* Track */}
       <path
         d={trackPath}
         fill="none"
-        stroke="#1e1e35"
+        stroke="#334155"
         strokeWidth={strokeW}
         strokeLinecap="round"
       />
@@ -86,8 +79,7 @@ export default function MssGauge({ mss, zone, size = 220 }: Props) {
           stroke={color}
           strokeWidth={strokeW}
           strokeLinecap="round"
-          filter="url(#glow-filter)"
-          opacity={0.9}
+          opacity={0.85}
         />
       )}
 
@@ -101,7 +93,7 @@ export default function MssGauge({ mss, zone, size = 220 }: Props) {
             key={thresh}
             x1={inner.x} y1={inner.y}
             x2={outer.x} y2={outer.y}
-            stroke="#2d2d4e"
+            stroke="#475569"
             strokeWidth={1.5}
           />
         );
@@ -113,19 +105,17 @@ export default function MssGauge({ mss, zone, size = 220 }: Props) {
         cy={needleTip.y}
         r={5}
         fill={color}
-        filter="url(#glow-filter)"
       />
 
       {/* Center: MSS value */}
       <text
         x={cx}
-        y={cy - 10}
+        y={cy - 8}
         textAnchor="middle"
         fill={color}
         fontSize={size * 0.18}
         fontWeight="700"
-        fontFamily="JetBrains Mono, monospace"
-        filter="url(#glow-filter)"
+        fontFamily="Inter, sans-serif"
       >
         {mss.toFixed(1)}
       </text>
@@ -135,18 +125,18 @@ export default function MssGauge({ mss, zone, size = 220 }: Props) {
         x={cx}
         y={cy + 16}
         textAnchor="middle"
-        fill="#475569"
+        fill="#64748b"
         fontSize={10}
-        fontWeight="500"
-        fontFamily="JetBrains Mono, monospace"
-        letterSpacing="0.12em"
+        fontWeight="600"
+        fontFamily="Inter, sans-serif"
+        letterSpacing="0.08em"
       >
         MSS SCORE
       </text>
 
       {/* Min / Max labels */}
-      <text x={18} y={size - 8} fill="#2d2d4e" fontSize={9} fontFamily="JetBrains Mono, monospace">0</text>
-      <text x={size - 26} y={size - 8} fill="#2d2d4e" fontSize={9} fontFamily="JetBrains Mono, monospace">100</text>
+      <text x={18} y={size - 8} fill="#475569" fontSize={9} fontFamily="Inter, sans-serif">0</text>
+      <text x={size - 26} y={size - 8} fill="#475569" fontSize={9} fontFamily="Inter, sans-serif">100</text>
     </svg>
   );
 }

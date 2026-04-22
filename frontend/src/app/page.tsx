@@ -61,45 +61,60 @@ export default function Dashboard() {
       <header style={{
         borderBottom: '1px solid var(--border)',
         background: 'var(--bg-panel)',
-        padding: '0 24px',
-        height: 44,
+        padding: '0 20px',
+        height: 52,
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-          <span style={{
-            color: 'var(--accent-cyan)',
-            fontWeight: 700,
-            fontSize: 14,
-            letterSpacing: '0.08em',
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <div style={{
+            width: 32, height: 32, borderRadius: 8,
+            background: 'linear-gradient(135deg, #60a5fa, #38bdf8)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontSize: 15, fontWeight: 700, color: '#0f172a',
           }}>
-            ■ MSS SENTINEL
-          </span>
-          <span className="header-subtitle" style={{ color: 'var(--text-dim)', fontSize: 10 }}>
-            MULTI-FACTOR SENTIMENT SCORE
-          </span>
+            M
+          </div>
+          <div>
+            <div style={{ color: 'var(--text-primary)', fontWeight: 600, fontSize: 14 }}>
+              MSS Sentinel
+            </div>
+            <div className="header-subtitle" style={{ color: 'var(--text-dim)', fontSize: 11 }}>
+              Market Sentiment Score
+            </div>
+          </div>
         </div>
         <div className="header-meta">
           {current && !current.status && (
-            <span style={{ fontSize: 10, color: 'var(--text-dim)' }}>
+            <span style={{ fontSize: 11, color: 'var(--text-dim)', display: 'flex', alignItems: 'center' }}>
               {current.stale
-                ? <><span className="dot-stale" />STALE</>
-                : <><span className="dot-live" />LIVE</>
-              } · {current.dataAgeMinutes}min ago
+                ? <><span className="dot-stale" />Stale</>
+                : <><span className="dot-live" />Live</>
+              }
+              <span style={{ marginLeft: 4 }}>· {current.dataAgeMinutes}m ago</span>
             </span>
           )}
-          <span style={{ color: 'var(--text-dim)', fontSize: 10 }} suppressHydrationWarning>
-            {lastRefresh.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
+          <span style={{ color: 'var(--text-dim)', fontSize: 11 }} suppressHydrationWarning>
+            {lastRefresh.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}
           </span>
           <button
             onClick={refresh}
             style={{
-              background: 'none', border: '1px solid var(--accent-cyan)',
-              color: 'var(--accent-cyan)', fontSize: 9, padding: '2px 7px',
-              borderRadius: 3, cursor: 'pointer', fontFamily: 'var(--font)',
-              letterSpacing: '0.08em', opacity: 0.7,
+              background: 'var(--bg-hover)',
+              border: 'none',
+              color: 'var(--text-secondary)',
+              fontSize: 17,
+              width: 34,
+              height: 34,
+              borderRadius: 8,
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              transition: 'background 0.15s',
             }}
+            title="Refresh"
           >
             ↻
           </button>
@@ -237,12 +252,12 @@ export default function Dashboard() {
                 </thead>
                 <tbody>
                   {[
-                    { range: '95–100', zone: 'TOTAL PANIC', action: 'Deploy 80% of cash', color: '#ef4444' },
-                    { range: '85–94', zone: 'HIGH FEAR', action: 'Deploy 50% of cash', color: '#f97316' },
-                    { range: '65–84', zone: 'FEAR', action: 'Deploy 25% of cash', color: '#fbbf24' },
-                    { range: '40–64', zone: 'NEUTRAL', action: 'HOLD — do nothing', color: '#6b7280' },
+                    { range: '95–100', zone: 'TOTAL PANIC', action: 'Deploy 80% of cash', color: '#f87171' },
+                    { range: '85–94', zone: 'HIGH FEAR', action: 'Deploy 50% of cash', color: '#fb923c' },
+                    { range: '65–84', zone: 'FEAR', action: 'Deploy 25% of cash', color: '#fcd34d' },
+                    { range: '40–64', zone: 'NEUTRAL', action: 'HOLD — do nothing', color: '#94a3b8' },
                     { range: '20–39', zone: 'GREED', action: 'Trim 15% of portfolio', color: '#86efac' },
-                    { range: '0–19', zone: 'HIGH GREED', action: 'Trim 25% of portfolio', color: '#00ff41' },
+                    { range: '0–19', zone: 'HIGH GREED', action: 'Trim 25% of portfolio', color: '#4ade80' },
                   ].map((row) => {
                     const isActive = current?.zoneLabel?.toUpperCase() === row.zone.toUpperCase();
                     return (

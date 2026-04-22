@@ -7,9 +7,9 @@ interface Props {
 }
 
 const ACTION_ICONS: Record<string, string> = {
-  DEPLOY: '▲ DEPLOY',
-  TRIM: '▼ TRIM',
-  HOLD: '■ HOLD',
+  DEPLOY: '↑ DEPLOY',
+  TRIM: '↓ TRIM',
+  HOLD: '— HOLD',
 };
 
 export default function ZoneDisplay({ data }: Props) {
@@ -25,7 +25,7 @@ export default function ZoneDisplay({ data }: Props) {
         style={{
           background: bg,
           border: `1px solid ${color}`,
-          borderRadius: 4,
+          borderRadius: 8,
           padding: '10px 16px',
         }}
         className={isExtreme ? 'flash' : ''}
@@ -35,8 +35,7 @@ export default function ZoneDisplay({ data }: Props) {
           color,
           fontSize: 22,
           fontWeight: 700,
-          letterSpacing: '0.05em',
-          fontFamily: 'JetBrains Mono, monospace',
+          letterSpacing: '0.02em',
         }}>
           {data.zoneLabel}
         </div>
@@ -51,15 +50,14 @@ export default function ZoneDisplay({ data }: Props) {
       <div style={{
         background: 'var(--bg-card)',
         border: '1px solid var(--border)',
-        borderRadius: 4,
+        borderRadius: 8,
         padding: '10px 16px',
       }}>
         <div className="label" style={{ marginBottom: 6 }}>ACTION SIGNAL</div>
         <div style={{
-          color: data.action === 'HOLD' ? '#6b7280' : color,
+          color: data.action === 'HOLD' ? '#94a3b8' : color,
           fontSize: 15,
           fontWeight: 600,
-          fontFamily: 'JetBrains Mono, monospace',
           display: 'flex',
           alignItems: 'center',
           gap: 8,
@@ -96,7 +94,7 @@ function FactorCard({ label, raw, score, source }: {
     <div style={{
       background: 'var(--bg-card)',
       border: '1px solid var(--border-dim)',
-      borderRadius: 4,
+      borderRadius: 8,
       padding: '8px 12px',
     }}>
       <div className="label" style={{ marginBottom: 4 }}>{label} INDEX</div>

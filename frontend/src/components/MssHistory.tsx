@@ -15,20 +15,20 @@ function formatDate(ts: string) {
 }
 
 const ZONE_REFS = [
-  { value: 95, label: 'T.PANIC', color: '#ef4444' },
-  { value: 85, label: 'H.FEAR', color: '#f97316' },
-  { value: 65, label: 'FEAR', color: '#fbbf24' },
-  { value: 40, label: 'NEUTRAL', color: '#6b7280' },
+  { value: 95, label: 'T.PANIC', color: '#f87171' },
+  { value: 85, label: 'H.FEAR', color: '#fb923c' },
+  { value: 65, label: 'FEAR', color: '#fcd34d' },
+  { value: 40, label: 'NEUTRAL', color: '#94a3b8' },
   { value: 20, label: 'GREED', color: '#86efac' },
 ];
 
 function getMssColor(mss: number): string {
-  if (mss >= 95) return '#00ff41';
-  if (mss >= 85) return '#22c55e';
-  if (mss >= 65) return '#86efac';
-  if (mss >= 40) return '#6b7280';
-  if (mss >= 20) return '#f97316';
-  return '#ef4444';
+  if (mss >= 95) return '#4ade80';
+  if (mss >= 85) return '#86efac';
+  if (mss >= 65) return '#fcd34d';
+  if (mss >= 40) return '#94a3b8';
+  if (mss >= 20) return '#fb923c';
+  return '#f87171';
 }
 
 const CustomTooltip = ({ active, payload }: any) => {
@@ -36,12 +36,11 @@ const CustomTooltip = ({ active, payload }: any) => {
   const d = payload[0].payload as MssHistoryEntry;
   return (
     <div style={{
-      background: '#0f0f1a',
-      border: '1px solid #1e1e35',
-      borderRadius: 4,
+      background: '#1e293b',
+      border: '1px solid #334155',
+      borderRadius: 8,
       padding: '8px 12px',
-      fontFamily: 'JetBrains Mono, monospace',
-      fontSize: 11,
+      fontSize: 12,
     }}>
       <div style={{ color: '#94a3b8', marginBottom: 4 }}>
         {new Date(d.timestamp).toLocaleString()}
@@ -95,18 +94,18 @@ export default function MssHistory({ data }: Props) {
               <stop offset="100%" stopColor="#3b82f6" stopOpacity={0.02} />
             </linearGradient>
           </defs>
-          <CartesianGrid stroke="#1e1e35" strokeDasharray="3 3" vertical={false} />
+          <CartesianGrid stroke="#334155" strokeDasharray="3 3" strokeOpacity={0.5} vertical={false} />
           <XAxis
             dataKey="timestamp"
             tickFormatter={formatDate}
             ticks={ticks}
-            tick={{ fill: '#475569', fontSize: 9, fontFamily: 'JetBrains Mono' }}
-            axisLine={{ stroke: '#1e1e35' }}
+            tick={{ fill: '#64748b', fontSize: 10 }}
+            axisLine={{ stroke: '#334155' }}
             tickLine={false}
           />
           <YAxis
             domain={[0, 100]}
-            tick={{ fill: '#475569', fontSize: 9, fontFamily: 'JetBrains Mono' }}
+            tick={{ fill: '#64748b', fontSize: 10 }}
             axisLine={false}
             tickLine={false}
           />
@@ -118,7 +117,7 @@ export default function MssHistory({ data }: Props) {
               stroke={ref.color}
               strokeDasharray="4 4"
               strokeOpacity={0.3}
-              label={{ value: ref.label, fill: ref.color, fontSize: 8, fontFamily: 'JetBrains Mono' }}
+              label={{ value: ref.label, fill: ref.color, fontSize: 9 }}
             />
           ))}
           <Area
@@ -136,12 +135,12 @@ export default function MssHistory({ data }: Props) {
       {/* Zone legend */}
       <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginTop: 10 }}>
         {[
-          { label: 'TOTAL PANIC', color: '#ef4444' },
-          { label: 'HIGH FEAR', color: '#f97316' },
-          { label: 'FEAR', color: '#fbbf24' },
-          { label: 'NEUTRAL', color: '#6b7280' },
+          { label: 'TOTAL PANIC', color: '#f87171' },
+          { label: 'HIGH FEAR', color: '#fb923c' },
+          { label: 'FEAR', color: '#fcd34d' },
+          { label: 'NEUTRAL', color: '#94a3b8' },
           { label: 'GREED', color: '#86efac' },
-          { label: 'HIGH GREED', color: '#00ff41' },
+          { label: 'HIGH GREED', color: '#4ade80' },
         ].map((z) => (
           <div key={z.label} style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
             <div style={{ width: 8, height: 8, borderRadius: 2, background: z.color }} />

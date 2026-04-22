@@ -44,19 +44,19 @@ export interface MssHistoryEntry {
 }
 
 export const ZONE_COLORS: Record<Zone, string> = {
-  EXTREME_PANIC: '#ef4444',
-  TOTAL_PANIC: '#f97316',
-  HIGH_FEAR: '#fbbf24',
-  NEUTRAL: '#6b7280',
+  EXTREME_PANIC: '#f87171',
+  TOTAL_PANIC: '#fb923c',
+  HIGH_FEAR: '#fcd34d',
+  NEUTRAL: '#94a3b8',
   HIGH_GREED: '#86efac',
-  EUPHORIA: '#00ff41',
+  EUPHORIA: '#4ade80',
 };
 
 export const ZONE_BG: Record<Zone, string> = {
-  EXTREME_PANIC: 'rgba(239,68,68,0.12)',
-  TOTAL_PANIC: 'rgba(249,115,22,0.10)',
-  HIGH_FEAR: 'rgba(251,191,36,0.08)',
-  NEUTRAL: 'rgba(107,114,128,0.08)',
+  EXTREME_PANIC: 'rgba(248,113,113,0.10)',
+  TOTAL_PANIC: 'rgba(251,146,60,0.10)',
+  HIGH_FEAR: 'rgba(252,211,77,0.08)',
+  NEUTRAL: 'rgba(148,163,184,0.08)',
   HIGH_GREED: 'rgba(134,239,172,0.08)',
-  EUPHORIA: 'rgba(0,255,65,0.12)',
+  EUPHORIA: 'rgba(74,222,128,0.10)',
 };
