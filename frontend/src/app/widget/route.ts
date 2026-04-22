@@ -21,9 +21,13 @@ interface MssCurrent {
 
 async function getData(): Promise<MssCurrent | null> {
   try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 8000);
     const res = await fetch(`${API}/api/mss/current`, {
       cache: 'no-store',
+      signal: controller.signal,
     });
+    clearTimeout(timeout);
     if (!res.ok) return null;
     return res.json();
   } catch {
@@ -34,22 +38,25 @@ async function getData(): Promise<MssCurrent | null> {
 export async function GET() {
   const data = await getData();
 
-  const color = data?.color ?? '#3b82f6';
+  const color = data?.color ?? '#60a5fa';
   const hasData = data && !data.status;
+  const isWaking = !data;
 
-  const mss = hasData ? data.mss.toFixed(0) : '--';
-  const zone = hasData ? data.zoneLabel.toUpperCase() : 'NO DATA';
-  const action = hasData ? data.actionDetail : 'Cannot reach API';
+  const mss = hasData ? data.mss.toFixed(0) : '…';
+  const zone = hasData ? data.zoneLabel.toUpperCase() : (isWaking ? 'WAKING UP' : 'NO DATA');
+  const action = hasData ? data.actionDetail : (isWaking ? 'Server is starting, refreshing in 30s…' : 'Cannot reach API');
   const vix = hasData ? data.vix.toFixed(1) : '--';
   const fng = hasData ? String(data.fng) : '--';
   const age = hasData ? `${data.dataAgeMinutes}m` : '--';
-  const ageColor = data?.stale ? '#fbbf24' : '#94a3b8';
+  const ageColor = data?.stale ? '#fcd34d' : '#94a3b8';
+  const autoRefresh = isWaking ? 30 : 300;
 
   const html = `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta http-equiv="refresh" content="${autoRefresh}" />
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
