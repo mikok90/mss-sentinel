@@ -49,32 +49,125 @@ export async function GET() {
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta http-equiv="refresh" content="300" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #0f172a;
+      font-family: -apple-system, BlinkMacSystemFont, 'Inter', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 16px;
+    }
+    .card {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 16px;
+      padding: 20px;
+      width: 100%;
+      max-width: 340px;
+      position: relative;
+    }
+    .refresh-btn {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      width: 32px;
+      height: 32px;
+      background: #334155;
+      border: none;
+      border-radius: 8px;
+      color: #94a3b8;
+      font-size: 17px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+      line-height: 1;
+    }
+    .score {
+      font-size: 52px;
+      font-weight: 700;
+      line-height: 1;
+      color: ${color};
+      text-align: center;
+      margin-top: 8px;
+    }
+    .score-label {
+      text-align: center;
+      color: #64748b;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-top: 4px;
+    }
+    .zone {
+      text-align: center;
+      color: ${color};
+      font-size: 17px;
+      font-weight: 700;
+      margin-top: 14px;
+      letter-spacing: 0.02em;
+    }
+    .action {
+      text-align: center;
+      color: #94a3b8;
+      font-size: 12px;
+      margin-top: 6px;
+      line-height: 1.4;
+    }
+    .divider {
+      border: none;
+      border-top: 1px solid #334155;
+      margin: 14px 0;
+    }
+    .metrics {
+      display: flex;
+      justify-content: space-around;
+    }
+    .metric-label {
+      color: #64748b;
+      font-size: 9px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      text-align: center;
+    }
+    .metric-value {
+      color: #cbd5e1;
+      font-size: 15px;
+      font-weight: 600;
+      text-align: center;
+      margin-top: 2px;
+    }
+  </style>
 </head>
-<body style="margin:0;padding:12px;background:#0a0a0f;font-family:monospace;">
-  <div style="background:#0f0f1a;border:2px solid #1e3a6e;border-radius:10px;padding:18px 20px;text-align:center;box-shadow:0 0 18px #1e3a6e88;">
-    <div style="color:${color};font-size:42px;font-weight:bold;line-height:1;">${mss}</div>
-    <div style="color:#555;font-size:10px;letter-spacing:2px;margin-top:2px;">MSS SCORE</div>
-    <div style="color:${color};font-size:14px;font-weight:bold;margin-top:12px;letter-spacing:1px;">${zone}</div>
-    <div style="color:#888;font-size:11px;margin-top:8px;line-height:1.5;">${action}</div>
-    <hr style="border:none;border-top:1px solid #222;margin:12px 0;" />
-    <table style="width:100%;border-collapse:collapse;">
-      <tr>
-        <td style="text-align:center;padding:2px;">
-          <div style="color:#555;font-size:9px;letter-spacing:1px;">VIX</div>
-          <div style="color:#ddd;font-size:13px;font-weight:bold;">${vix}</div>
-        </td>
-        <td style="text-align:center;padding:2px;">
-          <div style="color:#555;font-size:9px;letter-spacing:1px;">F&amp;G</div>
-          <div style="color:#ddd;font-size:13px;font-weight:bold;">${fng}</div>
-        </td>
-        <td style="text-align:center;padding:2px;">
-          <div style="color:#555;font-size:9px;letter-spacing:1px;">AGE</div>
-          <div style="color:${ageColor};font-size:13px;font-weight:bold;">${age}</div>
-        </td>
-      </tr>
-    </table>
+<body>
+  <div class="card">
+    <a class="refresh-btn" href="/widget" title="Refresh">↻</a>
+    <div class="score">${mss}</div>
+    <div class="score-label">MSS Score</div>
+    <div class="zone">${zone}</div>
+    <div class="action">${action}</div>
+    <hr class="divider" />
+    <div class="metrics">
+      <div>
+        <div class="metric-label">VIX</div>
+        <div class="metric-value">${vix}</div>
+      </div>
+      <div>
+        <div class="metric-label">F&amp;G</div>
+        <div class="metric-value">${fng}</div>
+      </div>
+      <div>
+        <div class="metric-label">Age</div>
+        <div class="metric-value" style="color:${ageColor}">${age}</div>
+      </div>
+    </div>
   </div>
 </body>
 </html>`;

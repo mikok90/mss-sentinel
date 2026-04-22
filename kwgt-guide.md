@@ -1,59 +1,142 @@
-# KWGT Android Widget — MSS Sentinel Setup
+# KWGT Widget — MSS Sentinel (Soft Dark Redesign)
 
-## What you need
-- KWGT Pro (Play Store, ~5€)
-- Your backend URL from Render (e.g. `https://mss-backend-xxxx.onrender.com`)
+## Αποτέλεσμα
+Navy φόντο χωρίς glow borders, λευκό/γκρι κείμενο, integrated refresh button επάνω δεξιά.
 
-## Widget Layout (3 rows)
+---
 
+## ΒΗΜΑ 1 — Φόντο (Background Shape)
+
+- **Type:** Shape → Rectangle
+- **Corner Radius:** `20dp`
+- **Color:** `#0F172A` (deep navy)
+- **Opacity:** `95%`
+- **Border:** `OFF` (ή αν θέλεις πολύ λεπτό: color `#1E293B`, width `1dp`)
+- **Shadow:** `OFF`
+
+> ❌ Αφαίρεσε το glowing blue border/stroke που είχες πριν.
+
+---
+
+## ΒΗΜΑ 2 — Integrated Refresh Button (top-right)
+
+Αντί για το γκρι "C" που φαίνεται ξεκάρφωτο:
+
+1. Πρόσθεσε ένα **Text** element επάνω δεξιά
+2. **Text:** `↻`
+3. **Font size:** `14sp`
+4. **Color:** `#475569` (slate-500, διακριτικό)
+5. **Position:** X = 90% του πλάτους, Y = 8% του ύψους
+6. **Touch Action → Refresh Widget**
+
+> Έτσι το refresh button είναι μέρος του widget και δεν εμφανίζεται το γκρι OS button.
+
+---
+
+## ΒΗΜΑ 3 — MSS Score (κεντρικός αριθμός)
+
+- **Element:** Text
+- **Formula:** `$json(http("https://mss-sentinel-backend.onrender.com/api/mss/current"), "mss")$`
+- **Font size:** `48sp`
+- **Font:** Roboto Bold (ή Inter αν έχεις)
+- **Color:** `#F8FAFC` (σχεδόν λευκό)
+- **Alignment:** Center
+
+---
+
+## ΒΗΜΑ 4 — "MSS SCORE" Label
+
+- **Text:** `MSS SCORE`
+- **Font size:** `9sp`
+- **Color:** `#64748B`
+- **Letter spacing:** `0.12em`
+
+---
+
+## ΒΗΜΑ 5 — Zone Label (dynamic color)
+
+- **Formula text:**
 ```
-MSS  62.5  ■ NEUTRAL
-► HOLD
-VIX: 28.0  |  F&G: 25
-Updated: 14:30
+$json(http("https://mss-sentinel-backend.onrender.com/api/mss/current"), "zoneLabel")$
 ```
 
-## KWGT Formulas
-
-### Row 1 — MSS Value + Zone
+- **Font size:** `16sp`
+- **Font:** Roboto Medium
+- **Color formula (dynamic):**
 ```
-$tc(json(http("https://YOUR_URL/api/mss/current"), "mss"), ".", 1)$ ■ $tc(json(http("https://YOUR_URL/api/mss/current"), "zoneLabel"), "TRIM", "—")$
-```
-
-Simpler (separate text elements):
-- Text 1: `$json(http("https://YOUR_URL/api/mss/current"), "mss")$`
-- Text 2: `$json(http("https://YOUR_URL/api/mss/current"), "zoneLabel")$`
-
-### Row 2 — Action
-```
-► $json(http("https://YOUR_URL/api/mss/current"), "actionDetail")$
+$if(json(http("https://mss-sentinel-backend.onrender.com/api/mss/current"), "zone") = "EXTREME_PANIC", "#4ADE80",
+  if(json(http("https://mss-sentinel-backend.onrender.com/api/mss/current"), "zone") = "TOTAL_PANIC", "#F87171",
+    if(json(http("https://mss-sentinel-backend.onrender.com/api/mss/current"), "zone") = "HIGH_FEAR", "#FB923C",
+      if(json(http("https://mss-sentinel-backend.onrender.com/api/mss/current"), "zone") = "NEUTRAL", "#94A3B8",
+        if(json(http("https://mss-sentinel-backend.onrender.com/api/mss/current"), "zone") = "GREED", "#86EFAC", "#4ADE80")))))$
 ```
 
-### Row 3 — VIX & F&G
-```
-VIX: $json(http("https://YOUR_URL/api/mss/current"), "vix")$  |  F&G: $json(http("https://YOUR_URL/api/mss/current"), "fng")$
-```
+---
 
-### Row 4 — Last update
-```
-Updated: $df(si(http_date), "HH:mm")$
-```
+## ΒΗΜΑ 6 — Action Text
 
-## Zone Colors (use KWGT color formula)
+- **Formula:**
+```
+$json(http("https://mss-sentinel-backend.onrender.com/api/mss/current"), "actionDetail")$
+```
+- **Font size:** `11sp`
+- **Color:** `#94A3B8` (slate-400)
+- **Alignment:** Center
 
-```
-$if(json(http("..."), "zone") = "EXTREME_PANIC", "#00ff41",
-  if(json(http("..."), "zone") = "TOTAL_PANIC", "#22c55e",
-    if(json(http("..."), "zone") = "HIGH_FEAR", "#86efac",
-      if(json(http("..."), "zone") = "NEUTRAL", "#6b7280",
-        if(json(http("..."), "zone") = "HIGH_GREED", "#f97316", "#ef4444")))))$
-```
+---
+
+## ΒΗΜΑ 7 — Metrics Row (VIX · F&G · AGE)
+
+Χρησιμοποίησε 3 ξεχωριστά Text elements σε οριζόντια σειρά:
+
+| Element | Formula | Size | Color |
+|---------|---------|------|-------|
+| VIX label | `VIX` | 8sp | `#475569` |
+| VIX value | `$json(http("..."), "vix")$` | 13sp | `#CBD5E1` |
+| F&G label | `F&G` | 8sp | `#475569` |
+| F&G value | `$json(http("..."), "fng")$` | 13sp | `#CBD5E1` |
+| AGE label | `AGE` | 8sp | `#475569` |
+| AGE value | `$tc(json(http("..."), "dataAgeMinutes"), 0, 0)$m` | 13sp | `#CBD5E1` |
+
+Προαιρετικά, βάλε ένα λεπτό `│` διαχωριστικό μεταξύ τους, color `#1E293B`.
+
+---
+
+## ΒΗΜΑ 8 — Διαχωριστική Γραμμή (optional)
+
+Πάνω από τα metrics, ένα λεπτό horizontal line:
+- **Shape:** Rectangle, height `1dp`, width `80%`
+- **Color:** `#1E293B`
+
+---
+
+## Palette Summary
+
+| Χρήση | Hex |
+|-------|-----|
+| Background | `#0F172A` |
+| Border (optional) | `#1E293B` |
+| Κύριο κείμενο | `#F8FAFC` |
+| Secondary κείμενο | `#CBD5E1` |
+| Dim / labels | `#64748B` |
+| Refresh button | `#475569` |
+| TOTAL PANIC (red) | `#F87171` |
+| HIGH FEAR (orange) | `#FB923C` |
+| FEAR (yellow) | `#FCD34D` |
+| NEUTRAL (gray) | `#94A3B8` |
+| GREED (green) | `#86EFAC` |
+| EXTREME PANIC (bright green) | `#4ADE80` |
+
+---
+
+## Τι ΝΑ ΑΦΑΙΡΕΣΕΙΣ από το παλιό design
+
+- ❌ Blue glowing border / stroke
+- ❌ Το ξεχωριστό γκρι "C" refresh button (αντικαταστάθηκε με το `↻` στο βήμα 2)
+- ❌ `#0a0a0f` pure black background
+- ❌ JetBrains Mono font (πολύ futuristic — χρησιμοποίησε Roboto ή Inter)
+
+---
 
 ## Refresh Interval
-Set widget refresh to: **30 minutes** (matches backend cron)
-
-## Tips
-- Use a dark background shape (#0a0a0f) behind the widget
-- Place above Google Search bar
-- Use JetBrains Mono or Courier font for Bloomberg feel
-- For EXTREME_PANIC zone: add a green blinking indicator
+**30 λεπτά** (ταιριάζει με τον backend cron)
