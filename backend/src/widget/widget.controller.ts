@@ -49,25 +49,6 @@ export class WidgetController {
       padding: 20px;
       width: 100%;
       max-width: 340px;
-      position: relative;
-    }
-    .refresh-btn {
-      position: absolute;
-      top: 12px;
-      right: 12px;
-      width: 32px;
-      height: 32px;
-      background: #334155;
-      border: none;
-      border-radius: 8px;
-      color: #94a3b8;
-      font-size: 17px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-decoration: none;
-      line-height: 1;
     }
     .score {
       font-size: 52px;
@@ -128,7 +109,6 @@ export class WidgetController {
 </head>
 <body>
   <div class="card">
-    <a class="refresh-btn" href="/widget" title="Refresh">↻</a>
     <div class="score">${mss}</div>
     <div class="score-label">MSS Score</div>
     <div class="zone">${zone}</div>
