@@ -35,95 +35,24 @@ export class WidgetController {
   <meta http-equiv="pragma" content="no-cache" />
   <meta http-equiv="expires" content="0" />
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      background: #0f172a;
-      font-family: -apple-system, BlinkMacSystemFont, 'Inter', sans-serif;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-      padding: 12px;
-    }
-    .card {
-      background: #1e293b;
-      border: 1px solid #334155;
-      border-radius: 16px;
-      padding: 16px;
-      width: 100%;
-      max-width: 340px;
-    }
-    .header {
-      display: flex;
-      align-items: baseline;
-      justify-content: center;
-      gap: 10px;
-    }
-    .score {
-      font-size: 48px;
-      font-weight: 700;
-      line-height: 1;
-      color: ${color};
-    }
-    .zone {
-      color: ${color};
-      font-size: 16px;
-      font-weight: 700;
-    }
-    .action {
-      text-align: center;
-      color: #94a3b8;
-      font-size: 11px;
-      margin-top: 6px;
-      line-height: 1.3;
-    }
-    .divider {
-      border: none;
-      border-top: 1px solid #334155;
-      margin: 10px 0;
-    }
-    .metrics {
-      display: flex;
-      justify-content: space-around;
-    }
-    .metric-label {
-      color: #64748b;
-      font-size: 9px;
-      font-weight: 600;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      text-align: center;
-    }
-    .metric-value {
-      color: #e2e8f0;
-      font-size: 16px;
-      font-weight: 700;
-      text-align: center;
-      margin-top: 2px;
-    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{background:#0f172a;font-family:-apple-system,BlinkMacSystemFont,'Inter',sans-serif;display:flex;align-items:center;justify-content:center;min-height:100vh;padding:4px}
+    .c{background:#1e293b;border:1px solid #334155;border-radius:12px;padding:10px 14px;width:100%;max-width:340px}
+    .r1{display:flex;align-items:baseline;justify-content:center;gap:8px}
+    .s{font-size:40px;font-weight:700;line-height:1;color:${color}}
+    .z{color:${color};font-size:14px;font-weight:700}
+    .m{display:flex;justify-content:space-around;margin-top:8px}
+    .ml{color:#64748b;font-size:8px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;text-align:center}
+    .mv{color:#e2e8f0;font-size:14px;font-weight:700;text-align:center;margin-top:1px}
   </style>
 </head>
 <body>
-  <div class="card">
-    <div class="header">
-      <div class="score">${mss}</div>
-      <div class="zone">${zone}</div>
-    </div>
-    <div class="action">${action}</div>
-    <hr class="divider" />
-    <div class="metrics">
-      <div>
-        <div class="metric-label">VIX</div>
-        <div class="metric-value">${vix}</div>
-      </div>
-      <div>
-        <div class="metric-label">F&amp;G</div>
-        <div class="metric-value">${fng}</div>
-      </div>
-      <div>
-        <div class="metric-label">Age</div>
-        <div class="metric-value" style="color:${ageColor}">${age}</div>
-      </div>
+  <div class="c">
+    <div class="r1"><div class="s">${mss}</div><div class="z">${zone}</div></div>
+    <div class="m">
+      <div><div class="ml">VIX</div><div class="mv">${vix}</div></div>
+      <div><div class="ml">F&amp;G</div><div class="mv">${fng}</div></div>
+      <div><div class="ml">Age</div><div class="mv" style="color:${ageColor}">${age}</div></div>
     </div>
   </div>
   <script>setTimeout(function(){location.reload();},300000);</script>
