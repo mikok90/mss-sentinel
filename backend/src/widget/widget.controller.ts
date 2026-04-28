@@ -31,6 +31,9 @@ export class WidgetController {
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta http-equiv="refresh" content="300" />
+  <meta http-equiv="cache-control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="pragma" content="no-cache" />
+  <meta http-equiv="expires" content="0" />
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
@@ -40,51 +43,44 @@ export class WidgetController {
       align-items: center;
       justify-content: center;
       min-height: 100vh;
-      padding: 16px;
+      padding: 12px;
     }
     .card {
       background: #1e293b;
       border: 1px solid #334155;
       border-radius: 16px;
-      padding: 20px;
+      padding: 16px;
       width: 100%;
       max-width: 340px;
     }
+    .header {
+      display: flex;
+      align-items: baseline;
+      justify-content: center;
+      gap: 10px;
+    }
     .score {
-      font-size: 52px;
+      font-size: 48px;
       font-weight: 700;
       line-height: 1;
       color: ${color};
-      text-align: center;
-      margin-top: 8px;
-    }
-    .score-label {
-      text-align: center;
-      color: #64748b;
-      font-size: 10px;
-      font-weight: 600;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      margin-top: 4px;
     }
     .zone {
-      text-align: center;
       color: ${color};
-      font-size: 17px;
+      font-size: 16px;
       font-weight: 700;
-      margin-top: 14px;
     }
     .action {
       text-align: center;
       color: #94a3b8;
-      font-size: 12px;
+      font-size: 11px;
       margin-top: 6px;
-      line-height: 1.4;
+      line-height: 1.3;
     }
     .divider {
       border: none;
       border-top: 1px solid #334155;
-      margin: 14px 0;
+      margin: 10px 0;
     }
     .metrics {
       display: flex;
@@ -99,9 +95,9 @@ export class WidgetController {
       text-align: center;
     }
     .metric-value {
-      color: #cbd5e1;
-      font-size: 15px;
-      font-weight: 600;
+      color: #e2e8f0;
+      font-size: 16px;
+      font-weight: 700;
       text-align: center;
       margin-top: 2px;
     }
@@ -109,9 +105,10 @@ export class WidgetController {
 </head>
 <body>
   <div class="card">
-    <div class="score">${mss}</div>
-    <div class="score-label">MSS Score</div>
-    <div class="zone">${zone}</div>
+    <div class="header">
+      <div class="score">${mss}</div>
+      <div class="zone">${zone}</div>
+    </div>
     <div class="action">${action}</div>
     <hr class="divider" />
     <div class="metrics">
@@ -129,10 +126,14 @@ export class WidgetController {
       </div>
     </div>
   </div>
+  <script>setTimeout(function(){location.reload();},300000);</script>
 </body>
 </html>`;
 
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
+    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', '0');
     res.send(html);
   }
 }
