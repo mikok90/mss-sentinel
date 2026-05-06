@@ -20,6 +20,7 @@ const ZONE_REFS = [
   { value: 65, label: 'FEAR', color: '#fcd34d' },
   { value: 40, label: 'NEUTRAL', color: '#94a3b8' },
   { value: 20, label: 'GREED', color: '#86efac' },
+  { value: 19, label: 'H.GREED', color: '#4ade80' },
 ];
 
 function getMssColor(mss: number): string {

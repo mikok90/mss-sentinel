@@ -188,6 +188,27 @@ export default function Dashboard() {
               )}
             </div>
 
+            {/* VIX & F&G Index */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+              {[
+                { label: 'VIX', raw: current.vix, score: current.vixScore, source: current.dataSourceVix },
+                { label: 'F&G', raw: current.fng, score: current.fngScore, source: current.dataSourceFng },
+              ].map(({ label, raw, score, source }) => (
+                <div key={label} style={{
+                  background: 'var(--bg-card)',
+                  border: '1px solid var(--border-dim)',
+                  borderRadius: 8,
+                  padding: '8px 12px',
+                }}>
+                  <div className="label" style={{ marginBottom: 4 }}>{label} INDEX</div>
+                  <div style={{ color: 'var(--text-primary)', fontSize: 18, fontWeight: 600 }}>{raw}</div>
+                  <div style={{ color: 'var(--text-dim)', fontSize: 10, marginTop: 2 }}>
+                    Score: {score.toFixed(1)} · {source}
+                  </div>
+                </div>
+              ))}
+            </div>
+
             {/* Timestamps */}
             <div className="panel" style={{ padding: '10px 14px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
