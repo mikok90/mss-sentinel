@@ -4,6 +4,7 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { MssModule } from './mss/mss.module';
 import { MssReading } from './mss/mss.entity';
+import { KeepAliveService } from './keep-alive.service';
 @Module({
   imports: [
     ScheduleModule.forRoot(),
@@ -33,5 +34,6 @@ import { MssReading } from './mss/mss.entity';
 
     MssModule,
   ],
+  providers: [KeepAliveService],
 })
 export class AppModule {}

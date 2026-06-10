@@ -58,6 +58,8 @@ services:
         value: "24"
       - key: PORT
         value: "3001"
+      - key: RENDER_EXTERNAL_URL
+        value: https://mss-sentinel-backend.onrender.com
 
 databases:
   - name: mss-sentinel-db
