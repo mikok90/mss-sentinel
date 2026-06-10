@@ -73,7 +73,7 @@ Reference lines at: 95 (T.PANIC), 85 (H.FEAR), 65 (FEAR), 40 (NEUTRAL), 20 (GREE
 - BUG 2: Stability state rehydrated from DB on startup
 - BUG 3: `getCurrent()` returns confirmed zone + `pendingZone` field
 - BUG 4: KWGT widget colors match backend zone enum
-- BUG 5: Secrets removed from `render.yaml` (`sync: false`) — set in Render dashboard only
+- BUG 5: Secrets removed from `render.yaml` (`sync: false`) — tokens rotated 2026-06-10
 - BUG 6: `nextUpdate` uses `CRON_INTERVAL_MINUTES` env var
 - BUG 8: History days clamped to max 365
 - BUG 10: Health endpoint queries latest reading directly (not age-filtered)
