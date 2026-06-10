@@ -47,4 +47,13 @@ export class MssReading {
 
   @Column({ type: 'boolean', name: 'market_open' })
   marketOpen: boolean;
+
+  @Column({ type: 'decimal', precision: 10, scale: 2, nullable: true, name: 'spx_price' })
+  spxPrice: number | null;
+
+  @Column({ type: 'decimal', precision: 10, scale: 2, nullable: true, name: 'spx_52w_high' })
+  spx52wHigh: number | null;
+
+  @Column({ type: 'decimal', precision: 5, scale: 2, nullable: true, name: 'spx_drawdown' })
+  spxDrawdown: number | null;
 }

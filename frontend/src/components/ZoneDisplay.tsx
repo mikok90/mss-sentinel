@@ -7,9 +7,9 @@ interface Props {
 }
 
 const ACTION_ICONS: Record<string, string> = {
-  DEPLOY: '↑ DEPLOY',
-  TRIM: '↓ TRIM',
-  HOLD: '— HOLD',
+  DEPLOY: '↑ ΑΓΟΡΑ',
+  REVIEW: '⟳ ΕΛΕΓΧΟΣ',
+  HOLD: '— ΚΡΑΤΑ',
 };
 
 export default function ZoneDisplay({ data }: Props) {
@@ -17,6 +17,7 @@ export default function ZoneDisplay({ data }: Props) {
   const bg = ZONE_BG[data.zone] || 'transparent';
   const isExtreme = data.zone === 'EXTREME_PANIC';
   const actionIcon = ACTION_ICONS[data.action] || data.action;
+  const isDeploy = data.action === 'DEPLOY';
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
@@ -65,11 +66,14 @@ export default function ZoneDisplay({ data }: Props) {
           <span style={{ fontSize: 11 }}>{actionIcon}</span>
           {data.actionDetail}
         </div>
-        {data.actionPercent && (
+        {isDeploy && data.actionPercent && (
           <div style={{ color: '#475569', fontSize: 11, marginTop: 6 }}>
-            {data.action === 'DEPLOY'
-              ? `Deploy ${data.actionPercent}% of your AVAILABLE CASH into the market`
-              : `Trim ${data.actionPercent}% of your CURRENT INVESTED AMOUNT`}
+            Ανάπτυξε {data.actionPercent}% των ΔΙΑΘΕΣΙΜΩΝ ΜΕΤΡΗΤΩΝ στην αγορά
+          </div>
+        )}
+        {isDeploy && data.spxDrawdown !== null && (
+          <div style={{ color: '#60a5fa', fontSize: 11, marginTop: 4 }}>
+            SPX Drawdown: {data.spxDrawdown.toFixed(1)}%
           </div>
         )}
       </div>

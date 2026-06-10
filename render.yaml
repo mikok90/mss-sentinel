@@ -46,10 +46,12 @@ services:
         value: "50"
       - key: ACTION_HIGH_FEAR_BUY_PCT
         value: "25"
-      - key: ACTION_HIGH_GREED_TRIM_PCT
+      - key: SPX_DRAWDOWN_HIGH_FEAR_PCT
+        value: "3"
+      - key: SPX_DRAWDOWN_TOTAL_PANIC_PCT
+        value: "8"
+      - key: SPX_DRAWDOWN_EXTREME_PANIC_PCT
         value: "15"
-      - key: ACTION_EUPHORIA_TRIM_PCT
-        value: "25"
       - key: STABILITY_READINGS
         value: "2"
       - key: CRON_INTERVAL_MINUTES

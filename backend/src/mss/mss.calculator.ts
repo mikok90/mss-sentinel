@@ -1,6 +1,6 @@
 // ─── MSS Calculator ──────────────────────────────────────────────────────────
 // Pure functions — no side effects, fully testable.
-// Formula accuracy is non-negotiable. All 5 spec scenarios verified in tests.
+// v2 "Discipline Engine" — TRIM → REVIEW, Greek action texts, SPX drawdown gate.
 
 export const VIX_FLOOR = parseFloat(process.env.VIX_FLOOR || '12');
 export const VIX_CEILING = parseFloat(process.env.VIX_CEILING || '40');
@@ -16,8 +16,11 @@ export const ZONE_HIGH_GREED = parseInt(process.env.ZONE_HIGH_GREED || '20');
 export const ACTION_EXTREME_PANIC_BUY_PCT = parseInt(process.env.ACTION_EXTREME_PANIC_BUY_PCT || '80');
 export const ACTION_TOTAL_PANIC_BUY_PCT = parseInt(process.env.ACTION_TOTAL_PANIC_BUY_PCT || '50');
 export const ACTION_HIGH_FEAR_BUY_PCT = parseInt(process.env.ACTION_HIGH_FEAR_BUY_PCT || '25');
-export const ACTION_HIGH_GREED_TRIM_PCT = parseInt(process.env.ACTION_HIGH_GREED_TRIM_PCT || '15');
-export const ACTION_EUPHORIA_TRIM_PCT = parseInt(process.env.ACTION_EUPHORIA_TRIM_PCT || '25');
+
+// SPX drawdown thresholds — deploy zones require SPX confirmation
+export const SPX_DRAWDOWN_HIGH_FEAR_PCT = parseFloat(process.env.SPX_DRAWDOWN_HIGH_FEAR_PCT || '3');
+export const SPX_DRAWDOWN_TOTAL_PANIC_PCT = parseFloat(process.env.SPX_DRAWDOWN_TOTAL_PANIC_PCT || '8');
+export const SPX_DRAWDOWN_EXTREME_PANIC_PCT = parseFloat(process.env.SPX_DRAWDOWN_EXTREME_PANIC_PCT || '15');
 
 export type Zone =
   | 'EXTREME_PANIC'
@@ -27,7 +30,7 @@ export type Zone =
   | 'HIGH_GREED'
   | 'EUPHORIA';
 
-export type ActionType = 'DEPLOY' | 'TRIM' | 'HOLD';
+export type ActionType = 'DEPLOY' | 'REVIEW' | 'HOLD';
 
 export interface ZoneInfo {
   zone: Zone;
@@ -38,100 +41,63 @@ export interface ZoneInfo {
   color: string;
 }
 
-/**
- * Step 1: Map VIX to 0-100 fear scale.
- * V = clamp(0, 100, (vix - floor) / (ceiling - floor) × 100)
- *
- * VIX=12 → 0.0 | VIX=20 → 28.6 | VIX=30 → 64.3 | VIX=40 → 100.0
- */
 export function calculateVixScore(vix: number): number {
   return Math.max(0, Math.min(100, ((vix - VIX_FLOOR) / (VIX_CEILING - VIX_FLOOR)) * 100));
 }
 
-/**
- * Step 2: Invert CNN F&G (0=fear, 100=greed) to fear scale.
- * FG = 100 - fng
- *
- * F&G=0 → FG=100 | F&G=50 → FG=50 | F&G=100 → FG=0
- */
 export function calculateFngScore(fng: number): number {
   return 100 - fng;
 }
 
-/**
- * Step 3: Weighted composite.
- * MSS = (0.70 × V) + (0.30 × FG), rounded to 1 decimal.
- */
 export function calculateMss(vixScore: number, fngScore: number): number {
   const raw = VIX_WEIGHT * vixScore + FNG_WEIGHT * fngScore;
   return Math.round(raw * 10) / 10;
 }
 
-/**
- * Step 4: Map MSS to zone + action.
- */
 export function getZoneInfo(mss: number): ZoneInfo {
   if (mss >= ZONE_EXTREME_PANIC) {
-    return {
-      zone: 'EXTREME_PANIC',
-      zoneLabel: 'TOTAL PANIC',
-      action: 'DEPLOY',
-      actionPercent: ACTION_EXTREME_PANIC_BUY_PCT,
-      actionDetail: `Deploy ${ACTION_EXTREME_PANIC_BUY_PCT}% of your available cash`,
-      color: '#ef4444',
-    };
+    return { zone: 'EXTREME_PANIC', zoneLabel: 'TOTAL PANIC', action: 'DEPLOY', actionPercent: ACTION_EXTREME_PANIC_BUY_PCT, actionDetail: `Ανάπτυξε ${ACTION_EXTREME_PANIC_BUY_PCT}% των μετρητών σου — ακραίος πανικός`, color: '#ef4444' };
   }
   if (mss >= ZONE_TOTAL_PANIC) {
-    return {
-      zone: 'TOTAL_PANIC',
-      zoneLabel: 'HIGH FEAR',
-      action: 'DEPLOY',
-      actionPercent: ACTION_TOTAL_PANIC_BUY_PCT,
-      actionDetail: `Deploy ${ACTION_TOTAL_PANIC_BUY_PCT}% of your available cash`,
-      color: '#f97316',
-    };
+    return { zone: 'TOTAL_PANIC', zoneLabel: 'HIGH FEAR', action: 'DEPLOY', actionPercent: ACTION_TOTAL_PANIC_BUY_PCT, actionDetail: `Ανάπτυξε ${ACTION_TOTAL_PANIC_BUY_PCT}% των μετρητών σου — υψηλός φόβος`, color: '#f97316' };
   }
   if (mss >= ZONE_HIGH_FEAR) {
-    return {
-      zone: 'HIGH_FEAR',
-      zoneLabel: 'FEAR',
-      action: 'DEPLOY',
-      actionPercent: ACTION_HIGH_FEAR_BUY_PCT,
-      actionDetail: `Deploy ${ACTION_HIGH_FEAR_BUY_PCT}% of your available cash`,
-      color: '#fbbf24',
-    };
+    return { zone: 'HIGH_FEAR', zoneLabel: 'FEAR', action: 'DEPLOY', actionPercent: ACTION_HIGH_FEAR_BUY_PCT, actionDetail: `Ανάπτυξε ${ACTION_HIGH_FEAR_BUY_PCT}% των μετρητών σου — φόβος`, color: '#fbbf24' };
   }
   if (mss >= ZONE_NEUTRAL) {
-    return {
-      zone: 'NEUTRAL',
-      zoneLabel: 'NEUTRAL',
-      action: 'HOLD',
-      actionPercent: null,
-      actionDetail: 'HOLD — do nothing',
-      color: '#6b7280',
-    };
+    return { zone: 'NEUTRAL', zoneLabel: 'NEUTRAL', action: 'HOLD', actionPercent: null, actionDetail: 'Κράτα θέσεις — μη κάνεις τίποτα', color: '#6b7280' };
   }
   if (mss >= ZONE_HIGH_GREED) {
-    return {
-      zone: 'HIGH_GREED',
-      zoneLabel: 'GREED',
-      action: 'TRIM',
-      actionPercent: ACTION_HIGH_GREED_TRIM_PCT,
-      actionDetail: `Trim ${ACTION_HIGH_GREED_TRIM_PCT}% of your invested portfolio`,
-      color: '#86efac',
-    };
+    return { zone: 'HIGH_GREED', zoneLabel: 'GREED', action: 'REVIEW', actionPercent: null, actionDetail: 'Έλεγξε δορυφόρους — καμία πώληση δείκτη', color: '#86efac' };
   }
-  return {
-    zone: 'EUPHORIA',
-    zoneLabel: 'HIGH GREED',
-    action: 'TRIM',
-    actionPercent: ACTION_EUPHORIA_TRIM_PCT,
-    actionDetail: `Trim ${ACTION_EUPHORIA_TRIM_PCT}% of your invested portfolio`,
-    color: '#00ff41',
-  };
+  return { zone: 'EUPHORIA', zoneLabel: 'HIGH GREED', action: 'REVIEW', actionPercent: null, actionDetail: 'Έλεγξε δορυφόρους — καμία πώληση δείκτη. Πειθαρχία.', color: '#00ff41' };
 }
 
-/** Full pipeline: raw inputs → MSS result */
+/**
+ * Returns an override message when SPX drawdown is insufficient for deploy zones.
+ * Returns null if drawdown is sufficient (action should proceed).
+ */
+export function getDrawdownOverride(zone: Zone, drawdownPct: number | null): string | null {
+  if (drawdownPct === null) {
+    if (zone === 'EXTREME_PANIC' || zone === 'TOTAL_PANIC' || zone === 'HIGH_FEAR') {
+      return 'Δεδομένα SPX μη διαθέσιμα — περίμενε επιβεβαίωση πτώσης πριν αγοράσεις';
+    }
+    return null;
+  }
+
+  if (zone === 'EXTREME_PANIC' && drawdownPct < SPX_DRAWDOWN_EXTREME_PANIC_PCT) {
+    return `SPX πτώση ${drawdownPct.toFixed(1)}% — χρειάζεται ≥${SPX_DRAWDOWN_EXTREME_PANIC_PCT}% για deploy. Περίμενε.`;
+  }
+  if (zone === 'TOTAL_PANIC' && drawdownPct < SPX_DRAWDOWN_TOTAL_PANIC_PCT) {
+    return `SPX πτώση ${drawdownPct.toFixed(1)}% — χρειάζεται ≥${SPX_DRAWDOWN_TOTAL_PANIC_PCT}% για deploy. Περίμενε.`;
+  }
+  if (zone === 'HIGH_FEAR' && drawdownPct < SPX_DRAWDOWN_HIGH_FEAR_PCT) {
+    return `SPX πτώση ${drawdownPct.toFixed(1)}% — χρειάζεται ≥${SPX_DRAWDOWN_HIGH_FEAR_PCT}% για deploy. Περίμενε.`;
+  }
+
+  return null;
+}
+
 export function computeMss(vix: number, fng: number) {
   const vixScore = calculateVixScore(vix);
   const fngScore = calculateFngScore(fng);

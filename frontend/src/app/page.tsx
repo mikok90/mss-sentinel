@@ -5,6 +5,7 @@ import { MssCurrent, MssHistoryEntry, ZONE_COLORS } from '../types/mss';
 import MssGauge from '../components/MssGauge';
 import ZoneDisplay from '../components/ZoneDisplay';
 import MssHistory from '../components/MssHistory';
+import StrategyPanel from '../components/StrategyPanel';
 
 const API = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
@@ -78,10 +79,10 @@ export default function Dashboard() {
           </div>
           <div>
             <div style={{ color: 'var(--text-primary)', fontWeight: 600, fontSize: 14 }}>
-              MSS Sentinel
+              MSS Sentinel v2
             </div>
             <div className="header-subtitle" style={{ color: 'var(--text-dim)', fontSize: 11 }}>
-              Market Sentiment Score
+              Discipline Engine
             </div>
           </div>
         </div>
@@ -251,6 +252,9 @@ export default function Dashboard() {
               <ZoneDisplay data={current} />
             </div>
 
+            {/* Strategy Panel */}
+            <StrategyPanel />
+
             {/* History chart */}
             <div className="panel" style={{ padding: 16 }}>
               <MssHistory data={history} />
@@ -258,11 +262,16 @@ export default function Dashboard() {
 
             {/* Zone reference table */}
             <div className="panel" style={{ padding: 16 }}>
-              <div className="label" style={{ marginBottom: 12 }}>DECISION MATRIX</div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+                <div className="label">DECISION MATRIX</div>
+                <a href="/katanomi" style={{ fontSize: 10, color: 'var(--accent-blue)', textDecoration: 'none' }}>
+                  Κατανομή →
+                </a>
+              </div>
               <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                 <thead>
                   <tr style={{ borderBottom: '1px solid var(--border)' }}>
-                    {['MSS RANGE', 'ZONE', 'ACTION'].map((h) => (
+                    {['MSS', 'ΖΩΝΗ', 'ΕΝΕΡΓΕΙΑ', 'SPX DRAWDOWN'].map((h) => (
                       <th key={h} style={{
                         textAlign: 'left', padding: '4px 8px',
                         color: 'var(--text-dim)', fontSize: 9,
@@ -273,12 +282,12 @@ export default function Dashboard() {
                 </thead>
                 <tbody>
                   {[
-                    { range: '95–100', zone: 'TOTAL PANIC', action: 'Deploy 80% of cash', color: '#f87171' },
-                    { range: '85–94', zone: 'HIGH FEAR', action: 'Deploy 50% of cash', color: '#fb923c' },
-                    { range: '65–84', zone: 'FEAR', action: 'Deploy 25% of cash', color: '#fcd34d' },
-                    { range: '40–64', zone: 'NEUTRAL', action: 'HOLD — do nothing', color: '#94a3b8' },
-                    { range: '20–39', zone: 'GREED', action: 'Trim 15% of portfolio', color: '#86efac' },
-                    { range: '0–19', zone: 'HIGH GREED', action: 'Trim 25% of portfolio', color: '#4ade80' },
+                    { range: '95–100', zone: 'TOTAL PANIC', action: 'Ανάπτυξε 80%', drawdown: '≥15%', color: '#f87171' },
+                    { range: '85–94', zone: 'HIGH FEAR', action: 'Ανάπτυξε 50%', drawdown: '≥8%', color: '#fb923c' },
+                    { range: '65–84', zone: 'FEAR', action: 'Ανάπτυξε 25%', drawdown: '≥3%', color: '#fcd34d' },
+                    { range: '40–64', zone: 'NEUTRAL', action: 'Κράτα', drawdown: '—', color: '#94a3b8' },
+                    { range: '20–39', zone: 'GREED', action: 'Έλεγξε δορυφόρους', drawdown: '—', color: '#86efac' },
+                    { range: '0–19', zone: 'HIGH GREED', action: 'Έλεγξε δορυφόρους', drawdown: '—', color: '#4ade80' },
                   ].map((row) => {
                     const isActive = current?.zoneLabel?.toUpperCase() === row.zone.toUpperCase();
                     return (
@@ -294,6 +303,9 @@ export default function Dashboard() {
                         </td>
                         <td style={{ padding: '6px 8px', color: 'var(--text-secondary)', fontSize: 10 }}>
                           {row.action}
+                        </td>
+                        <td style={{ padding: '6px 8px', color: 'var(--text-dim)', fontSize: 10 }}>
+                          {row.drawdown}
                         </td>
                       </tr>
                     );
@@ -316,7 +328,7 @@ export default function Dashboard() {
         maxWidth: 1100,
         margin: '20px auto 0',
       }}>
-        <span>MSS Sentinel — Contrarian market sentiment monitor</span>
+        <span>MSS Sentinel v2 — Discipline Engine</span>
         <span>VIX (70%) + Fear & Greed (30%) · Updates every 30 min</span>
       </footer>
     </div>

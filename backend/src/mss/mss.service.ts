@@ -2,10 +2,12 @@ import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, MoreThan } from 'typeorm';
 import { MssReading } from './mss.entity';
+import { CycleState } from './cycle-state.entity';
 import { VixService } from '../data-sources/vix.service';
 import { FngService } from '../data-sources/fng.service';
+import { SpxService } from '../data-sources/spx.service';
 import { TelegramService } from '../telegram/telegram.service';
-import { computeMss, getZoneInfo, Zone } from './mss.calculator';
+import { computeMss, getZoneInfo, getDrawdownOverride, Zone } from './mss.calculator';
 
 const MAX_DATA_AGE_HOURS = parseInt(process.env.MAX_DATA_AGE_HOURS || '24');
 const STABILITY_READINGS = parseInt(process.env.STABILITY_READINGS || '2');
@@ -22,8 +24,11 @@ export class MssService {
   constructor(
     @InjectRepository(MssReading)
     private readonly repo: Repository<MssReading>,
+    @InjectRepository(CycleState)
+    private readonly cycleRepo: Repository<CycleState>,
     private readonly vixService: VixService,
     private readonly fngService: FngService,
+    private readonly spxService: SpxService,
     private readonly telegramService: TelegramService,
   ) {}
 
@@ -51,6 +56,16 @@ export class MssService {
       this.previousRawZone = lastReading.zone as Zone;
       this.logger.log(`Rehydrated previousRawZone: ${this.previousRawZone}`);
     }
+  }
+
+  /** Get or create the single-row cycle state */
+  private async getCycleState(): Promise<CycleState> {
+    let state = await this.cycleRepo.findOne({ where: { id: 1 } });
+    if (!state) {
+      state = this.cycleRepo.create({ id: 1, alertedTiers: [], cycleHighWatermark: 0 });
+      await this.cycleRepo.save(state);
+    }
+    return state;
   }
 
   /** Called by cron every 30 minutes */
@@ -94,6 +109,20 @@ export class MssService {
       dataSourceFng = 'CACHE';
     }
 
+    // Fetch SPX data (non-fatal — null if unavailable)
+    let spxPrice: number | null = null;
+    let spx52wHigh: number | null = null;
+    let spxDrawdown: number | null = null;
+
+    try {
+      const spxResult = await this.spxService.fetchSpx();
+      spxPrice = spxResult.price;
+      spx52wHigh = spxResult.fiftyTwoWeekHigh;
+      spxDrawdown = spxResult.drawdownPct;
+    } catch (err) {
+      this.logger.warn(`SPX fetch failed (non-fatal): ${err.message}`);
+    }
+
     // Calculate MSS
     const calc = computeMss(vixValue, fngValue);
     const currentZone = calc.zone as Zone;
@@ -121,6 +150,24 @@ export class MssService {
 
     this.previousRawZone = currentZone;
 
+    // Manage cycle state — reset alertedTiers when SPX near 52w high
+    if (spxDrawdown !== null) {
+      const cycleState = await this.getCycleState();
+
+      // Update high watermark
+      if (spxPrice !== null && spxPrice > Number(cycleState.cycleHighWatermark)) {
+        cycleState.cycleHighWatermark = spxPrice;
+      }
+
+      // Reset cycle if SPX is within 0.5% of 52w high
+      if (spxDrawdown < 0.5 && cycleState.alertedTiers.length > 0) {
+        this.logger.log('SPX near 52w high — resetting cycle alertedTiers');
+        cycleState.alertedTiers = [];
+      }
+
+      await this.cycleRepo.save(cycleState);
+    }
+
     // Save to DB
     const reading = this.repo.create({
       vixValue,
@@ -136,24 +183,42 @@ export class MssService {
       dataSourceVix,
       dataSourceFng,
       marketOpen,
+      spxPrice,
+      spx52wHigh,
+      spxDrawdown,
     });
 
     await this.repo.save(reading);
     this.logger.log(
-      `MSS: ${calc.mss} | Zone: ${calc.zoneLabel} | Confirmed: ${zoneConfirmed} | Changed: ${zoneChanged}`,
+      `MSS: ${calc.mss} | Zone: ${calc.zoneLabel} | Confirmed: ${zoneConfirmed} | Changed: ${zoneChanged} | SPX drawdown: ${spxDrawdown?.toFixed(1) ?? 'N/A'}%`,
     );
 
-    // Send Telegram alert on confirmed zone change
+    // Send Telegram alert on confirmed zone change (once per cycle per tier)
     if (zoneChanged && zoneConfirmed) {
-      await this.telegramService.sendZoneChangeAlert({
-        zone: calc.zone as Zone,
-        zoneLabel: calc.zoneLabel,
-        mss: calc.mss,
-        action: calc.action,
-        actionDetail: calc.actionDetail,
-        vix: vixValue,
-        fng: fngValue,
-      });
+      const cycleState = await this.getCycleState();
+      const tier = calc.zone;
+
+      if (!cycleState.alertedTiers.includes(tier)) {
+        // Apply drawdown override to action detail for the alert
+        const drawdownOverride = getDrawdownOverride(calc.zone as Zone, spxDrawdown);
+        const alertDetail = drawdownOverride || calc.actionDetail;
+
+        await this.telegramService.sendZoneChangeAlert({
+          zone: calc.zone as Zone,
+          zoneLabel: calc.zoneLabel,
+          mss: calc.mss,
+          action: calc.action,
+          actionDetail: alertDetail,
+          vix: vixValue,
+          fng: fngValue,
+          spxDrawdown,
+        });
+
+        cycleState.alertedTiers = [...cycleState.alertedTiers, tier];
+        await this.cycleRepo.save(cycleState);
+      } else {
+        this.logger.log(`Tier ${tier} already alerted this cycle — skipping Telegram`);
+      }
     }
   }
 
@@ -196,15 +261,22 @@ export class MssService {
       }
     }
 
+    // Apply drawdown override for deploy zones
+    const spxDrawdown = latest.spxDrawdown !== null ? Number(latest.spxDrawdown) : null;
+    const drawdownOverride = getDrawdownOverride(displayZoneInfo.zone as Zone, spxDrawdown);
+    const actionDetail = latest.zoneConfirmed
+      ? (drawdownOverride || displayZoneInfo.actionDetail)
+      : 'Αναμονή επιβεβαίωσης ζώνης...';
+
     return {
       mss: Number(latest.mss),
       zone: displayZoneInfo.zone,
       zoneLabel: displayZoneInfo.zoneLabel,
       zoneConfirmed: latest.zoneConfirmed,
       action: displayZoneInfo.action,
-      actionDetail: latest.zoneConfirmed ? displayZoneInfo.actionDetail : 'Waiting for zone confirmation...',
+      actionDetail,
       actionPercent: displayZoneInfo.actionPercent,
-      actionType: displayZoneInfo.action === 'DEPLOY' ? 'buy' : displayZoneInfo.action === 'TRIM' ? 'sell' : null,
+      actionType: displayZoneInfo.action === 'DEPLOY' ? 'buy' : displayZoneInfo.action === 'REVIEW' ? 'review' : null,
       color: displayZoneInfo.color,
       pendingZone,
       vix: Number(latest.vixValue),
@@ -218,6 +290,7 @@ export class MssService {
       dataSourceFng: latest.dataSourceFng,
       dataAgeMinutes: Math.round(ageHours * 60),
       stale: ageHours > 2,
+      spxDrawdown,
     };
   }
 
@@ -276,14 +349,12 @@ export class MssService {
 
   private isMarketOpen(): boolean {
     const now = new Date();
-    // US market: Mon-Fri 9:30am-4:00pm ET (UTC-4 or UTC-5)
     const utcHour = now.getUTCHours();
     const utcMin = now.getUTCMinutes();
-    const day = now.getUTCDay(); // 0=Sun, 6=Sat
+    const day = now.getUTCDay();
 
     if (day === 0 || day === 6) return false;
 
-    // Approximate ET offset: -4 (EDT) or -5 (EST)
     const etOffset = this.isDaylightSaving(now) ? -4 : -5;
     const etHour = ((utcHour + etOffset) % 24 + 24) % 24;
     const etMin = utcMin;
@@ -294,7 +365,6 @@ export class MssService {
   }
 
   private isDaylightSaving(date: Date): boolean {
-    // US DST: 2nd Sunday March → 1st Sunday November
     const year = date.getUTCFullYear();
     const marchSecondSunday = this.getNthSunday(year, 2, 2);
     const novFirstSunday = this.getNthSunday(year, 10, 1);
