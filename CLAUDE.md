@@ -57,15 +57,34 @@ Reference lines at: 95 (T.PANIC), 85 (H.FEAR), 65 (FEAR), 40 (NEUTRAL), 20 (GREE
 - `/widget` route (`frontend/src/app/widget/route.ts`) — ultra-compact HTML for KWGT widget
 - Guide: `kwgt-guide.md`
 
+## Stability Rule
+- Zone change requires 2 consecutive readings in the new zone before confirming
+- State (`displayedZone`, `previousRawZone`) rehydrated from DB on startup (survives restarts)
+- `getCurrent()` returns the last **confirmed** zone when latest is unconfirmed
+- `pendingZone` field shows the unconfirmed zone label (or null)
+
 ## Keep-Alive (Render Free Tier)
 - `backend/src/keep-alive.service.ts` — self-pings `/api/mss/health` every 10 min
 - Prevents Render free tier from spinning down after 15 min inactivity
 - Requires `RENDER_EXTERNAL_URL` env var (set in `render.yaml`)
 
+## Bug Fixes Applied (2026-06-10)
+- BUG 1: `getLastValidReading()` now applies age filter (`MoreThan(since)`)
+- BUG 2: Stability state rehydrated from DB on startup
+- BUG 3: `getCurrent()` returns confirmed zone + `pendingZone` field
+- BUG 4: KWGT widget colors match backend zone enum
+- BUG 5: Secrets removed from `render.yaml` (`sync: false`) — set in Render dashboard only
+- BUG 6: `nextUpdate` uses `CRON_INTERVAL_MINUTES` env var
+- BUG 8: History days clamped to max 365
+- BUG 10: Health endpoint queries latest reading directly (not age-filtered)
+- BUG 11: Frontend fetches have 15s timeout (`AbortSignal.timeout`)
+
 ## Environment Variables (Render)
-- `FRED_API_KEY` — VIX data
-- `TELEGRAM_BOT_TOKEN` / `TELEGRAM_CHAT_ID` — alert notifications
+- `FRED_API_KEY` — VIX data (set in Render dashboard, NOT in render.yaml)
+- `TELEGRAM_BOT_TOKEN` / `TELEGRAM_CHAT_ID` — alert notifications (dashboard only)
 - `TELEGRAM_ENABLED=true`
 - `RENDER_EXTERNAL_URL` — backend public URL (for keep-alive self-ping)
+- `CRON_INTERVAL_MINUTES` — cron frequency (default 30)
+- `MAX_DATA_AGE_HOURS` — cache staleness limit (default 24)
 - Zone/action thresholds configurable via env vars
-- **Note**: Secrets should be set in Render dashboard, NOT in `render.yaml`
+- **Secrets must be set in Render dashboard, NOT in `render.yaml`**
