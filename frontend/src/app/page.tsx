@@ -9,13 +9,13 @@ import MssHistory from '../components/MssHistory';
 const API = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
 async function fetchCurrent(): Promise<MssCurrent> {
-  const res = await fetch(`${API}/api/mss/current`, { cache: 'no-store' });
+  const res = await fetch(`${API}/api/mss/current`, { cache: 'no-store', signal: AbortSignal.timeout(15000) });
   if (!res.ok) throw new Error('API error');
   return res.json();
 }
 
 async function fetchHistory(): Promise<MssHistoryEntry[]> {
-  const res = await fetch(`${API}/api/mss/history?days=30`, { cache: 'no-store' });
+  const res = await fetch(`${API}/api/mss/history?days=30`, { cache: 'no-store', signal: AbortSignal.timeout(15000) });
   if (!res.ok) throw new Error('API error');
   return res.json();
 }

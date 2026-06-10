@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, MoreThan } from 'typeorm';
 import { MssReading } from './mss.entity';
 import { VixService } from '../data-sources/vix.service';
 import { FngService } from '../data-sources/fng.service';
@@ -9,6 +9,7 @@ import { computeMss, getZoneInfo, Zone } from './mss.calculator';
 
 const MAX_DATA_AGE_HOURS = parseInt(process.env.MAX_DATA_AGE_HOURS || '24');
 const STABILITY_READINGS = parseInt(process.env.STABILITY_READINGS || '2');
+const CRON_MINUTES = parseInt(process.env.CRON_INTERVAL_MINUTES || '30');
 
 @Injectable()
 export class MssService {
@@ -26,8 +27,35 @@ export class MssService {
     private readonly telegramService: TelegramService,
   ) {}
 
+  /** Rehydrate stability state from DB (survives restarts) */
+  private async rehydrateState(): Promise<void> {
+    if (this.displayedZone !== null) return; // already initialized
+
+    // Last confirmed zone = displayedZone
+    const lastConfirmed = await this.repo.findOne({
+      where: { zoneConfirmed: true },
+      order: { timestamp: 'DESC' },
+    });
+
+    // Most recent reading = previousRawZone
+    const lastReading = await this.repo.findOne({
+      where: {},
+      order: { timestamp: 'DESC' },
+    });
+
+    if (lastConfirmed) {
+      this.displayedZone = lastConfirmed.zone as Zone;
+      this.logger.log(`Rehydrated displayedZone: ${this.displayedZone}`);
+    }
+    if (lastReading) {
+      this.previousRawZone = lastReading.zone as Zone;
+      this.logger.log(`Rehydrated previousRawZone: ${this.previousRawZone}`);
+    }
+  }
+
   /** Called by cron every 30 minutes */
   async runReading(): Promise<void> {
+    await this.rehydrateState();
     this.logger.log('Starting MSS reading...');
 
     let vixValue: number;
@@ -149,20 +177,36 @@ export class MssService {
       };
     }
 
-    const zoneInfo = getZoneInfo(Number(latest.mss));
+    const rawZoneInfo = getZoneInfo(Number(latest.mss));
     const nextUpdate = new Date(latest.timestamp);
-    nextUpdate.setMinutes(nextUpdate.getMinutes() + 30);
+    nextUpdate.setMinutes(nextUpdate.getMinutes() + CRON_MINUTES);
+
+    // If unconfirmed, show the last confirmed zone's data instead
+    let displayZoneInfo = rawZoneInfo;
+    let pendingZone: string | null = null;
+
+    if (!latest.zoneConfirmed) {
+      const lastConfirmed = await this.repo.findOne({
+        where: { zoneConfirmed: true },
+        order: { timestamp: 'DESC' },
+      });
+      if (lastConfirmed) {
+        displayZoneInfo = getZoneInfo(Number(lastConfirmed.mss));
+        pendingZone = rawZoneInfo.zoneLabel;
+      }
+    }
 
     return {
       mss: Number(latest.mss),
-      zone: latest.zone,
-      zoneLabel: zoneInfo.zoneLabel,
+      zone: displayZoneInfo.zone,
+      zoneLabel: displayZoneInfo.zoneLabel,
       zoneConfirmed: latest.zoneConfirmed,
-      action: latest.action,
-      actionDetail: latest.zoneConfirmed ? zoneInfo.actionDetail : 'Waiting for zone confirmation...',
-      actionPercent: latest.actionPercent,
-      actionType: latest.action === 'DEPLOY' ? 'buy' : latest.action === 'TRIM' ? 'sell' : null,
-      color: zoneInfo.color,
+      action: displayZoneInfo.action,
+      actionDetail: latest.zoneConfirmed ? displayZoneInfo.actionDetail : 'Waiting for zone confirmation...',
+      actionPercent: displayZoneInfo.actionPercent,
+      actionType: displayZoneInfo.action === 'DEPLOY' ? 'buy' : displayZoneInfo.action === 'TRIM' ? 'sell' : null,
+      color: displayZoneInfo.color,
+      pendingZone,
       vix: Number(latest.vixValue),
       fng: Number(latest.fngValue),
       vixScore: Number(latest.vixScore),
@@ -179,6 +223,7 @@ export class MssService {
 
   /** GET /api/mss/history?days=30 */
   async getHistory(days = 30) {
+    days = Math.min(Math.max(1, days), 365);
     const since = new Date();
     since.setDate(since.getDate() - days);
 
@@ -199,9 +244,12 @@ export class MssService {
     }));
   }
 
-  /** GET /api/mss/health */
+  /** GET /api/mss/health — always returns 200 for Render healthcheck */
   async getHealth() {
-    const latest = await this.getLastValidReading();
+    const latest = await this.repo.findOne({
+      where: {},
+      order: { timestamp: 'DESC' },
+    });
     if (!latest) return { status: 'no_data' };
 
     const ageMs = Date.now() - new Date(latest.timestamp).getTime();
@@ -221,7 +269,7 @@ export class MssService {
     since.setHours(since.getHours() - MAX_DATA_AGE_HOURS);
 
     return this.repo.findOne({
-      where: {},
+      where: { timestamp: MoreThan(since) },
       order: { timestamp: 'DESC' },
     });
   }

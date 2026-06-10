@@ -15,11 +15,11 @@ services:
           name: mss-sentinel-db
           property: connectionString
       - key: FRED_API_KEY
-        value: e6599d1d8f98466c1bd73847c65172ca
+        sync: false
       - key: TELEGRAM_BOT_TOKEN
-        value: 8357989706:AAFQgJ3gbxhc7qjJxI9WibxlJ4SuymVcJzM
+        sync: false
       - key: TELEGRAM_CHAT_ID
-        value: "8735897030"
+        sync: false
       - key: TELEGRAM_ENABLED
         value: "true"
       - key: VIX_WEIGHT

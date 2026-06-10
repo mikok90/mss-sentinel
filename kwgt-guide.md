@@ -64,11 +64,11 @@ $json(http("https://mss-sentinel-backend.onrender.com/api/mss/current"), "zoneLa
 - **Font:** Roboto Medium
 - **Color formula (dynamic):**
 ```
-$if(json(http("https://mss-sentinel-backend.onrender.com/api/mss/current"), "zone") = "EXTREME_PANIC", "#4ADE80",
-  if(json(http("https://mss-sentinel-backend.onrender.com/api/mss/current"), "zone") = "TOTAL_PANIC", "#F87171",
-    if(json(http("https://mss-sentinel-backend.onrender.com/api/mss/current"), "zone") = "HIGH_FEAR", "#FB923C",
-      if(json(http("https://mss-sentinel-backend.onrender.com/api/mss/current"), "zone") = "NEUTRAL", "#94A3B8",
-        if(json(http("https://mss-sentinel-backend.onrender.com/api/mss/current"), "zone") = "GREED", "#86EFAC", "#4ADE80")))))$
+$if(json(http("https://mss-sentinel-backend.onrender.com/api/mss/current"), "zone") = "EXTREME_PANIC", "#ef4444",
+  if(json(http("https://mss-sentinel-backend.onrender.com/api/mss/current"), "zone") = "TOTAL_PANIC", "#f97316",
+    if(json(http("https://mss-sentinel-backend.onrender.com/api/mss/current"), "zone") = "HIGH_FEAR", "#fbbf24",
+      if(json(http("https://mss-sentinel-backend.onrender.com/api/mss/current"), "zone") = "NEUTRAL", "#6b7280",
+        if(json(http("https://mss-sentinel-backend.onrender.com/api/mss/current"), "zone") = "HIGH_GREED", "#86efac", "#4ade80")))))$
 ```
 
 ---
@@ -120,12 +120,12 @@ $json(http("https://mss-sentinel-backend.onrender.com/api/mss/current"), "action
 | Secondary κείμενο | `#CBD5E1` |
 | Dim / labels | `#64748B` |
 | Refresh button | `#475569` |
-| TOTAL PANIC (red) | `#F87171` |
-| HIGH FEAR (orange) | `#FB923C` |
-| FEAR (yellow) | `#FCD34D` |
-| NEUTRAL (gray) | `#94A3B8` |
-| GREED (green) | `#86EFAC` |
-| EXTREME PANIC (bright green) | `#4ADE80` |
+| EXTREME_PANIC / TOTAL PANIC (red) | `#ef4444` |
+| TOTAL_PANIC / HIGH FEAR (orange) | `#f97316` |
+| HIGH_FEAR / FEAR (yellow) | `#fbbf24` |
+| NEUTRAL (gray) | `#6b7280` |
+| HIGH_GREED / GREED (light green) | `#86efac` |
+| EUPHORIA / HIGH GREED (green) | `#4ade80` |
 
 ---
 
